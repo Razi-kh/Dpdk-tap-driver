@@ -14,7 +14,7 @@ text
 
 This flag guarantees that function entry and exit points are marked during compilation; otherwise, **LTTng traces will be empty**.
 
-![DPDK build configuration](images/picture1.png)
+![DPDK build configuration](images/Picture1.png)
 
 ---
 
@@ -22,7 +22,7 @@ This flag guarantees that function entry and exit points are marked during compi
 
 Huge pages are configured to provide large contiguous memory regions required for high-speed packet processing in DPDK.
 
-![Huge pages configuration](images/picture2.png)
+![Huge pages configuration](images/Picture2.png)
 
 ---
 
@@ -31,7 +31,7 @@ Huge pages are configured to provide large contiguous memory regions required fo
 The kernel version corresponding to `liblttng-ust-cyg-profile.so` is verified.  
 Two **TAP interfaces** are created and pinned to two CPUs. Initially, the port status shows no traffic.
 
-![TAP interfaces setup](images/picture3.png)
+![TAP interfaces setup](images/Picture3.png)
 
 ---
 
@@ -39,7 +39,7 @@ Two **TAP interfaces** are created and pinned to two CPUs. Initially, the port s
 
 Ports are stopped, new **RX and TX queues** are added, and the ports are restarted.
 
-![RX/TX queues](images/picture4.png)
+![RX/TX queues](images/Picture4.png)
 
 ---
 
@@ -54,7 +54,7 @@ text
 
 A flow rule is created so that packets matching **Ethernet, IPv4, and UDP** headers are forwarded to **Queue 0**.
 
-![Forwarding rule](images/picture5.png)
+![Forwarding rule](images/Picture5.png)
 
 ---
 
@@ -62,7 +62,7 @@ A flow rule is created so that packets matching **Ethernet, IPv4, and UDP** head
 
 `tcpreplay` is installed and configured to simulate network traffic load.
 
-![Tcpreplay setup](images/picture6.png)
+![Tcpreplay setup](images/Picture6.png)
 
 ---
 
@@ -70,7 +70,7 @@ A flow rule is created so that packets matching **Ethernet, IPv4, and UDP** head
 
 Traffic is captured on the TAP interface using **Wireshark** and saved for later replay.
 
-![Wireshark capture](images/picture7.png)
+![Wireshark capture](images/Picture7.png)
 
 ---
 
@@ -78,9 +78,9 @@ Traffic is captured on the TAP interface using **Wireshark** and saved for later
 
 The captured traffic is replayed, and the generated packet flow is observed on the interfaces.
 
-![Traffic replay](images/picture8.png)
+![Traffic replay](images/Picture8.png)
 
-![Interface traffic observation](images/picture9.png)
+![Interface traffic observation](images/Picture9.png)
 
 ---
 
@@ -88,7 +88,7 @@ The captured traffic is replayed, and the generated packet flow is observed on t
 
 An **LTTng tracing script** is written and executed. The results are analyzed using **Trace Compass**.
 
-![LTTng tracing script](images/picture10.png)
+![LTTng tracing script](images/Picture10.png)
 
 ---
 
@@ -100,9 +100,9 @@ As shown in the pie charts:
 - ~50% of events correspond to `func_entry`
 - ~50% correspond to `func_exit`
 
-![CPU event distribution](images/picture11.png)
+![CPU event distribution](images/Picture11.png)
 
-![Function entry vs exit](images/picture12.png)
+![Function entry vs exit](images/Picture12.png)
 
 ---
 
@@ -112,17 +112,17 @@ The **Time Chart** reveals severe **bimodal oscillatory behavior**, where execut
 
 This square-pattern behavior is a classical indicator of **cache depletion and refill cycles**, confirming that the current **Mempool configuration cannot sustain the incoming traffic rate**.
 
-![Time chart](images/picture13.png)
+![Time chart](images/Picture13.png)
 
-![Cache depletion](images/picture14.png)
+![Cache depletion](images/Picture14.png)
 
-![Oscillatory execution](images/picture15.png)
+![Oscillatory execution](images/Picture15.png)
 
 ---
 
 ## 12. Execution Pattern Overview
 
-![Execution pattern](images/picture16.png)
+![Execution pattern](images/Picture16.png)
 
 **Observed execution flow:**
 Receive → Process → Transmit → Free Memory
