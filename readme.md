@@ -219,8 +219,21 @@ Frequent **kernel ↔ user context switches**, combined with intensive memory al
 4. Enable deeper kernel-level tracing  
 
 ---
+## 19. Summary of Trace Analysis Findings
 
-## 19. Final Results and Conclusion
+The following table summarizes the key bottlenecks identified using LTTng and Trace Compass:
+
+| Metric | Dominant Functions / Observations | Evidence within TraceCompass |
+| :--- | :--- | :--- |
+| **Root Cause Function** | `pmd_rx_burst` → **`rte_pktmbuf_alloc`** | **Flame Graph** (Deepest level analysis) & Function Duration Statistics |
+| **Call Count Analysis** | `rte_ethdev_trace_rx_burst_empty` (Called **48,236** times out of 48,728) → **99% Empty Polls** | **Statistics View** (Top-level aggregation) |
+| **Time Consumption** | `rte_pktmbuf_alloc` consumes **~216 ms** (out of 447 ms total in PMD) → **~50% Overhead** | **Flame Graph Tooltip** (Self-time vs Total-time) |
+| **Latency Spikes (Jitter)** | Max latency in `pmd_rx_burst` = **22.3 ms**.<br>Max latency in `alloc` = **9.5 ms**. | **Function Duration Distribution** & Time Chart |
+| **Performance Pattern** | Square-wave pattern bimodal distribution). Latency jumps between **~80 μs** (cache hit) and **~220 μs** (cache miss). | **Time Chart View** (Visualizing Cache Thrashing) |
+`
+---
+
+## 20. Final Results and Conclusion
 
 Because the TAP driver relies heavily on **system calls** and **CPU-based memory copying**, most processing occurs in the kernel and appears as a black box at the user level.
 
