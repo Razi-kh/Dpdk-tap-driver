@@ -245,12 +245,14 @@ Without this explicit instruction, the analysis would have been compromised by t
 **Conclusion:** This rule allowed us to isolate the performance of a single RX queue under maximum load, proving that the **Mempool Cache size** was the limiting factor when a single core is saturated.
 
 ## 21. Final Results and Conclusion
+Because the TAP driver relies heavily on system calls and CPU-based memory copying, significant processing overhead occurs in the kernel (Context Switching), acting as a "black box" to user-space tools.
 
-Because the TAP driver relies heavily on **system calls** and **CPU-based memory copying**, most processing occurs in the kernel and appears as a black box at the user level.
+However, our Trace Compass analysis successfully isolated the root causes:
 
-Trace Compass analysis confirms:
-- `pmd_rx_burst` is the primary bottleneck  
-- Memory allocation consumes nearly **half of the driver execution time**  
-- Suboptimal **Mempool configuration** amplifies RX latency  
+1.  **Primary Bottleneck:** `pmd_rx_burst` dominates the execution time.
+2.  **Memory Overhead:** `rte_pktmbuf_alloc` consumes nearly **50%** of the driver's execution time.
+3.  **Root Cause:** The bimodal execution pattern confirms **Mempool Cache Thrashing**, caused by a suboptimal cache size relative to the burst size.
 
-✅ Increasing the **Mempool cache size** can significantly reduce latency and improve overall RX performance.
+**✅ Recommendation:**
+Increasing the **Mempool Cache Size** will directly mitigate the allocation latency. For environments requiring higher throughput beyond TAP's architectural limits, migrating to the **Virtio-User** driver is recommended.
+
