@@ -7,6 +7,13 @@
 
 First, DPDK is downloaded and installed. Then, the build environment is configured using **Meson** with function instrumentation enabled.
 
+```bash
+meson setup build \
+  -Dexamples=all \
+  -Dlibdir=lib \
+  -Denable_trace_fp=true \
+  -Dc_args="-finstrument-functions"
+  
 
 
 This flag guarantees that function entry and exit points are marked during compilation; otherwise, **LTTng traces will be empty**.
