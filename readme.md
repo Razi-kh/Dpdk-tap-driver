@@ -6,7 +6,7 @@
 ## 1. DPDK Installation and Build Configuration
 
 First, DPDK is downloaded and installed. Then, the build environment is configured using **Meson** with function instrumentation enabled.
--ffunction-sections -finstrument-functions
+
 
 
 This flag guarantees that function entry and exit points are marked during compilation; otherwise, **LTTng traces will be empty**.
