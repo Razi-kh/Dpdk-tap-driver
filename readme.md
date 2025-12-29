@@ -146,7 +146,8 @@ This square-pattern behavior is a classical indicator of **cache depletion and r
 ![Execution pattern](images/Picture16.png)
 
 **Observed execution flow:**
-Receive → Process → Transmit → Free Memory
+Receive → Process → Transmit → Free Memory.
+
 This represents the main packet-processing pipeline in DPDK.
 
 ---
