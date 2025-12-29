@@ -231,8 +231,20 @@ The following table summarizes the key bottlenecks identified using LTTng and Tr
 | **Latency Spikes (Jitter)** | Max latency in `pmd_rx_burst` = **22.3 ms**.<br>Max latency in `alloc` = **9.5 ms**. | **Function Duration Distribution** & Time Chart |
 | **Performance Pattern** | Square-wave pattern bimodal distribution). Latency jumps between **~80 μs** (cache hit) and **~220 μs** (cache miss). | **Time Chart View** (Visualizing Cache Thrashing) |
 ---
+## 20. Test Configuration: The Critical Role of Flow Isolation
+To ensure accurate profiling and repeatable results, we applied a specific **rte_flow** rule to steer traffic:
+**Why was this rule essential?**
+Without this explicit instruction, the analysis would have been compromised by the default behavior of the driver/kernel.
 
-## 20. Final Results and Conclusion
+| Impact Area | With Flow Rule (Our Setup) | Without Flow Rule (Default Behavior) |
+| :--- | :--- | :--- |
+| **Traffic Steering** | **Deterministic:** 100% of IPv4/UDP traffic is forced into **Queue 0**. | **Random/Hashed:** Traffic is distributed across multiple queues (RSS), diluting the load. |
+| **Bottleneck Detection** | **High Stress:** By concentrating load on a single core, we successfully triggered and visualized the **Mempool Cache Thrashing** and `alloc` latency. | **Masked Issues:** The load would spread across cores, likely hiding the memory allocation bottleneck and making the 22ms latency spikes disappear or appear random. |
+| **Signal-to-Noise** | **Clean Trace:** Only relevant UDP packets are processed. | **Noisy Trace:** ARP, IPv6, and control packets would pollute the trace data, affecting the accuracy of function duration statistics. |
+
+**Conclusion:** This rule allowed us to isolate the performance of a single RX queue under maximum load, proving that the **Mempool Cache size** was the limiting factor when a single core is saturated.
+
+## 21. Final Results and Conclusion
 
 Because the TAP driver relies heavily on **system calls** and **CPU-based memory copying**, most processing occurs in the kernel and appears as a black box at the user level.
 
