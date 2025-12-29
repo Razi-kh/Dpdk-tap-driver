@@ -6,7 +6,7 @@
 ## 1. DPDK Installation and Build Configuration
 
 First, DPDK is downloaded and installed. Then, the build environment is configured using **Meson** with function instrumentation enabled.
-This flag guarantees that function entry and exit points are marked during compilation; otherwise, **LTTng traces will be empty**.
+
 
 ![DPDK build configuration](images/Picture1.png)
 
@@ -17,12 +17,17 @@ meson setup build \
   -Denable_trace_fp=true \
   -Dc_args="-finstrument-functions"
 ```
+Dc_args="-finstrument-functions" flag guarantees that function entry and exit points are marked during compilation; otherwise, **LTTng traces will be empty**.
 ---
 
 ## 2. Huge Pages Configuration
 
 Huge pages are configured to provide large contiguous memory regions required for high-speed packet processing in DPDK.
-
+```bash
+echo 1024 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+mkdir /mnt/huge
+mount -t hugetlbfs pagesize=1GB /mnt/huge
+```
 ![Huge pages configuration](images/Picture2.png)
 
 ---
@@ -30,6 +35,9 @@ Huge pages are configured to provide large contiguous memory regions required fo
 ## 3. Kernel Version Check and TAP Interface Setup
 
 The kernel version corresponding to `liblttng-ust-cyg-profile.so` is verified.  
+```bash
+sudo LD_PRELOAD=/usr/lib/x86_64-linux-gnu/liblttng-ust-cyg-profile.so.1 ./app/dpdk-testpmd -l 0-1 -n 2   --vdev=net_tap0,iface=tap0   --vdev=net_tap1,iface=tap1   --   -i
+```
 Two **TAP interfaces** are created and pinned to two CPUs. Initially, the port status shows no traffic.
 
 ![TAP interfaces setup](images/Picture3.png)
@@ -48,8 +56,9 @@ Ports are stopped, new **RX and TX queues** are added, and the ports are restart
 
 The command below is used to verify the forwarding configuration:
 show config fwd
-
-
+```bash
+flow create 0 ingress pattern eth / ipv4 / udp / end actions queue index 0 / end
+```
 A flow rule is created so that packets matching **Ethernet, IPv4, and UDP** headers are forwarded to **Queue 0**.
 
 ![Forwarding rule](images/Picture5.png)
@@ -77,7 +86,9 @@ Traffic is captured on the TAP interface using **Wireshark** and saved for later
 The captured traffic is replayed, and the generated packet flow is observed on the interfaces.
 
 ![Traffic replay](images/Picture8.png)
-
+```bash
+tcpreplay -i tap0 --loop=1000 ./Capture.pcap 
+```
 ![Interface traffic observation](images/Picture9.png)
 
 ---
@@ -85,7 +96,18 @@ The captured traffic is replayed, and the generated packet flow is observed on t
 ## 9. LTTng Tracing Setup
 
 An **LTTng tracing script** is written and executed. The results are analyzed using **Trace Compass**.
-
+```bash
+#!/bin/bash
+lttng create libpcap
+lttng enable-channel --userspace --num-subbuf=4 --subbuf-size=40M channel0
+#lttng enable-channel --userspace channel0
+lttng enable-event --channel channel0 --userspace --all
+lttng add-context --channel channel0 --userspace --type=vpid --type=vtid --type=procname
+lttng start
+sleep 2
+lttng stop
+lttng destroy
+```
 ![LTTng tracing script](images/Picture10.png)
 
 ---
