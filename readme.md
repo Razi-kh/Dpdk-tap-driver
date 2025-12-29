@@ -102,7 +102,6 @@ As shown in the pie charts:
 
 ![CPU event distribution](images/Picture11.png)
 
-![Function entry vs exit](images/Picture12.png)
 
 ---
 
@@ -112,15 +111,17 @@ The **Time Chart** reveals severe **bimodal oscillatory behavior**, where execut
 
 This square-pattern behavior is a classical indicator of **cache depletion and refill cycles**, confirming that the current **Mempool configuration cannot sustain the incoming traffic rate**.
 
+![Function entry vs exit](images/Picture12.png)
+
+
+---
+
+## 12. Execution Pattern Overview
 ![Time chart](images/Picture13.png)
 
 ![Cache depletion](images/Picture14.png)
 
 ![Oscillatory execution](images/Picture15.png)
-
----
-
-## 12. Execution Pattern Overview
 
 ![Execution pattern](images/Picture16.png)
 
