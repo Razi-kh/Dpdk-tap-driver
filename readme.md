@@ -9,9 +9,6 @@ First, DPDK is downloaded and installed. Then, the build environment is configur
 -ffunction-sections -finstrument-functions
 
 
-content_copy
-text
-
 This flag guarantees that function entry and exit points are marked during compilation; otherwise, **LTTng traces will be empty**.
 
 ![DPDK build configuration](images/Picture1.png)
@@ -48,9 +45,6 @@ Ports are stopped, new **RX and TX queues** are added, and the ports are restart
 The command below is used to verify the forwarding configuration:
 show config fwd
 
-
-content_copy
-text
 
 A flow rule is created so that packets matching **Ethernet, IPv4, and UDP** headers are forwarded to **Queue 0**.
 
@@ -127,11 +121,6 @@ This square-pattern behavior is a classical indicator of **cache depletion and r
 
 **Observed execution flow:**
 Receive → Process → Transmit → Free Memory
-
-
-content_copy
-text
-
 This represents the main packet-processing pipeline in DPDK.
 
 ---
