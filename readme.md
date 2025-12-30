@@ -149,7 +149,7 @@ This represents the main packet-processing pipeline in DPDK.
 - **Number of Calls:** 48,728  
 - **Average Duration:** 32 µs  
 - **Maximum Duration:** **28.5 ms**
-**Critical Insight:** The difference between the average and maximum execution time (~1000×) indicates severe intermittent stalls in the processing loop.
+Critical Insight: The difference between the average and maximum execution time (~1000×) indicates severe intermittent stalls in the processing loop.
 ---
 ## 14. TX Path Analysis
 - **Duration:** ~300 ms  
