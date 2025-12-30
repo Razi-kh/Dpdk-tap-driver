@@ -242,7 +242,7 @@ Without this explicit instruction, the analysis would have been compromised by t
 | **Bottleneck Detection** | **High Stress:** By concentrating load on a single core, we successfully triggered and visualized the **Mempool Cache Thrashing** and `alloc` latency. | **Masked Issues:** The load would spread across cores, likely hiding the memory allocation bottleneck and making the 22ms latency spikes disappear or appear random. |
 | **Signal-to-Noise** | **Clean Trace:** Only relevant UDP packets are processed. | **Noisy Trace:** ARP, IPv6, and control packets would pollute the trace data, affecting the accuracy of function duration statistics. |
 
-**Conclusion:** This rule allowed us to isolate the performance of a single RX queue under maximum load, proving that the **Mempool Cache size** was the limiting factor when a single core is saturated.
+**Conclusion: This rule allowed us to isolate the performance of a single RX queue under maximum load, proving that the **Mempool Cache size** was the limiting factor when a single core is saturated.
 ---
 ## 21. Performance Analysis & Optimization Proposal: DPDK TAP Driver
 
