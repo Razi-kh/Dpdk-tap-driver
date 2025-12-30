@@ -137,21 +137,16 @@ This square-pattern behavior is a classical indicator of **cache depletion and r
 ---
 
 ## 12. Execution Pattern Overview
-![Time chart](images/Picture13.png)
-
-![Cache depletion](images/Picture14.png)
-
-![Oscillatory execution](images/Picture15.png)
-
-![Execution pattern](images/Picture16.png)
-
 **Observed execution flow:**
 Receive → Process → Transmit → Free Memory.
 
 This represents the main packet-processing pipeline in DPDK.
+![Time chart](images/Picture13.png)
 
 ---
+![Cache depletion](images/Picture14.png)
 
+![Oscillatory execution](images/Picture15.png)
 ## 13. Main Loop Analysis (`pkt_burst_io_forward`)
 
 - **Total Duration:** ~1.5 seconds  
@@ -161,7 +156,6 @@ This represents the main packet-processing pipeline in DPDK.
 
 **Critical Insight:**  
 The difference between the average and maximum execution time (~1000×) indicates severe intermittent stalls in the processing loop.
-
 ---
 
 ## 14. TX Path Analysis
@@ -192,6 +186,21 @@ The TX path is relatively efficient and does not represent a major performance c
 - `rte_pktmbuf_alloc`
 
 RX processing is approximately **4× more expensive than TX**.
+---
+
+![Execution pattern](images/Picture16.png)
+### 📉 Detailed Call Stack: The Cost of Memory Allocation
+
+This hierarchical view of the call stack provides irrefutable evidence of the memory bottleneck within the RX path:
+
+*   **Driver Execution:** The `pmd_rx_burst` function (TAP driver receive) took a total of **447.499 ms**.
+*   **The Bottleneck:** Inside this function, `rte_pktmbuf_alloc` consumed **216.735 ms**.
+*   **Impact:** Memory allocation alone accounts for **~48.4%** of the total driver execution time.
+
+**Technical Insight:**
+Ideally, `rte_pktmbuf_alloc` should be near-instantaneous by fetching from the per-core cache. The fact that it consumes half the execution time confirms that the **Mempool Cache is thrashing or empty**, forcing the system to fall back to the slower underlying ring mechanism to fetch memory blocks.
+
+
 
 ---
 
