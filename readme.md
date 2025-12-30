@@ -144,9 +144,6 @@ This represents the main packet-processing pipeline in DPDK.
 ![Time chart](images/Picture13.png)
 
 ---
-![Cache depletion](images/Picture14.png)
-
-![Oscillatory execution](images/Picture15.png)
 ## 13. Main Loop Analysis (`pkt_burst_io_forward`)
 
 - **Total Duration:** ~1.5 seconds  
@@ -159,20 +156,15 @@ The difference between the average and maximum execution time (~1000×) indicate
 ---
 
 ## 14. TX Path Analysis
-
 - **Duration:** ~300 ms  
 - **Label:** `common_fwd_stream_transmit`
-
 **Functions involved:**
 - `rte_eth_tx_burst`
 - `pmd_tx_burst`
 - `rte_pktmbuf_free`
-
 **Observation:**  
 The TX path is relatively efficient and does not represent a major performance concern.
-
 ---
-
 ## 15. RX Path Analysis – Main Bottleneck
 
 - **RX Duration:** **~1.1 seconds**
@@ -186,9 +178,12 @@ The TX path is relatively efficient and does not represent a major performance c
 - `rte_pktmbuf_alloc`
 
 RX processing is approximately **4× more expensive than TX**.
----
 
-![Execution pattern](images/Picture16.png)
+![Cache depletion](images/Picture14.png)
+
+![Oscillatory execution](images/Picture15.png)
+
+---
 ### 📉 Detailed Call Stack: The Cost of Memory Allocation
 
 This hierarchical view of the call stack provides irrefutable evidence of the memory bottleneck within the RX path:
@@ -200,7 +195,7 @@ This hierarchical view of the call stack provides irrefutable evidence of the me
 **Technical Insight:**
 Ideally, `rte_pktmbuf_alloc` should be near-instantaneous by fetching from the per-core cache. The fact that it consumes half the execution time confirms that the **Mempool Cache is thrashing or empty**, forcing the system to fall back to the slower underlying ring mechanism to fetch memory blocks.
 
-
+![Execution pattern](images/Picture16.png)
 
 ---
 
