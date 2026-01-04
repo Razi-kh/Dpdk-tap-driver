@@ -17,7 +17,9 @@ meson setup build \
   -Denable_trace_fp=true \
   -Dc_args="-finstrument-functions"
 ```
+
 Dc_args="-finstrument-functions" flag guarantees that function entry and exit points are marked during compilation; otherwise, **LTTng traces will be empty**.
+
 ---
 
 ## 2. Huge Pages Configuration
